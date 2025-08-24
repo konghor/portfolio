@@ -1,42 +1,88 @@
-<!DOCTYPE html> 
-<html lang="en"> 
-    <head> <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>Portfolio</title> 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"> 
-    <link rel="stylesheet" href="style.css"> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KongHorla - Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <!-- Header -->
+  <header class="bg-white shadow sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold">KongHorla</h1>
+      <nav class="space-x-6">
+        <a href="#about" class="hover:text-blue-600">About</a>
+        <a href="#projects" class="hover:text-blue-600">Projects</a>
+        <a href="#contact" class="hover:text-blue-600">Contact</a>
+      </nav>
+    </div>
+  </header>
 
-</head> 
-<body> 
-    <div class="sidebar"> 
-        <ul> 
-            <li><a href="#">Home</a></li> 
-            <li><a href="#">About</a></li> 
-            <li><a href="#">Services</a></li> 
-            <li><a href="#">Projects</a> 
-                <div class="collapse"> 
-                    <ul> 
-                        <li><a href="#">Web Development</a></li> 
-                        <li><a href="#">Mobile Apps</a></li> 
-                        <li><a href="#">Desktop Apps</a></li> 
-                    </ul> </div> </li> 
-            <li><a href="#">Contact</a></li> 
-        </ul> 
+  <!-- Hero -->
+  <section class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-20">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <h2 class="text-4xl font-bold mb-4">Welcome to My Portfolio</h2>
+      <p class="text-lg mb-6">I build apps, websites, and ideas across multiple fields.</p>
+      <a href="#projects" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold shadow hover:bg-gray-100 transition">View My Work</a>
     </div>
-    <div class="content">
-        <h1>Welcome to My Portfolio</h1>
-        <img src="pfp.jpg">
-        <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            Phasellus lacinia lacus sed mi feugiat, at aliquet elit semper.
-            Curabitur in purus leo. Donec vel sem vel sapien malesuada tincidunt.
-            Etiam sagittis erat a diam malesuada, eget vestibulum est accumsan.
-            Proin facilisis neque in neque fin
-        </p>
-        <h1>Hi, I'm Kong Horla</h1>
-        <h2>kasem eiad</h2>
-        <p>I'm a software developer</p>
-        <p>Skills</p>
-        <p>Certification</p>
-        <p>Projects</p>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="py-16 max-w-4xl mx-auto px-4">
+    <h3 class="text-3xl font-bold mb-6">About Me</h3>
+    <p class="text-lg text-gray-700 leading-relaxed">
+      Hi, I’m <strong>Kong Hor</strong>. I create web apps, games, and digital products.
+      This site serves as a hub where all my projects and ideas connect.
+    </p>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects" class="py-16 bg-gray-100">
+    <div class="max-w-6xl mx-auto px-4">
+      <h3 class="text-3xl font-bold mb-10">My Projects</h3>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Example Project -->
+        <div class="bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
+          <h4 class="text-xl font-semibold mb-2">Thai Food Checklist</h4>
+          <p class="text-gray-600 mb-4">Gamified checklist to track Thai food you’ve tried.</p>
+          <a href="https://konghorla.com/thaifood" class="text-blue-600 hover:underline">Visit →</a>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
+          <h4 class="text-xl font-semibold mb-2">Epicist</h4>
+          <p class="text-gray-600 mb-4">YouTube channel for epic cinematic music.</p>
+          <a href="https://youtube.com/@epicist" class="text-blue-600 hover:underline">Visit →</a>
+        </div>
+
+        <div class="bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
+          <h4 class="text-xl font-semibold mb-2">Locus de Malus</h4>
+          <p class="text-gray-600 mb-4">Board game about escaping a haunted house.</p>
+          <a href="https://konghorla.com/locus" class="text-blue-600 hover:underline">Visit →</a>
+        </div>
+
+        <!-- Add more project cards here -->
+      </div>
     </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="py-16 max-w-4xl mx-auto px-4">
+    <h3 class="text-3xl font-bold mb-6">Contact</h3>
+    <p class="text-lg text-gray-700 mb-6">Interested in working together or exploring my projects? Reach me at:</p>
+    <a href="mailto:youremail@domain.com" class="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition">Email Me</a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t mt-16">
+    <div class="max-w-6xl mx-auto px-4 py-6 text-center text-gray-500 text-sm">
+      © <span id="year"></span> KongHorla. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
