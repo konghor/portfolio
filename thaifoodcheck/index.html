@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thai Food Achievement Checklist</title>
+  <style>
+    :root {
+      --bg: #0f1221;
+      --card: #171a2b;
+      --muted: #9aa4b2;
+      --text: #e8ecf3;
+      --accent: #5eead4; /* teal */
+      --accent-2: #a78bfa; /* purple */
+      --danger: #f87171;
+      --success: #34d399;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 80% -10%, rgba(167,139,250,0.25), transparent 60%),
+                  radial-gradient(1000px 600px at -10% 0%, rgba(94,234,212,0.18), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    header {
+      padding: 24px 16px 8px;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+    .subtitle {
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+    .bar-wrap {
+      width: 100%;
+      height: 16px;
+      background: #22253a;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+    }
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 300ms ease;
+    }
+    .bar-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 18px auto 40px;
+      padding: 0 16px 40px;
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .search {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #1c2033;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.06);
+      outline: none;
+    }
+    .btn {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #1d2136;
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 120ms ease, opacity 120ms ease, background 120ms ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); opacity: 0.9; }
+    .btn.outline { background: transparent; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+    .card input[type="checkbox"] {
+      width: 20px; height: 20px;
+      accent-color: #5eead4;
+      cursor: pointer;
+    }
+    .pill {
+      position: absolute;
+      right: 10px; top: 10px;
+      font-size: 0.72rem;
+      color: #a0aec0;
+      background: #1f2338;
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    .item-label { font-weight: 600; line-height: 1.2; }
+    .item-note { display:block; font-size: 0.82rem; color: var(--muted); font-weight: 500; }
+
+    .footer {
+      margin-top: 22px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .controls { grid-template-columns: 1fr 1fr 1fr; }
+      .controls .btn.export { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Thai Food Achievement Checklist 🥢</h1>
+    <p class="subtitle">Tick what you've tried. Your progress is saved in cookies on this device.</p>
+    <div class="bar-wrap" aria-label="Progress">
+      <div class="bar" id="progressBar"></div>
+    </div>
+    <div class="bar-label">
+      <span id="progressText">0% complete</span>
+      <span id="countText">0 / 0 tried</span>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="controls">
+      <input id="search" class="search" placeholder="Search dishes (e.g., Pad Thai, curry, noodle)…" />
+      <button id="checkAll" class="btn">Check All Visible</button>
+      <button id="uncheckAll" class="btn outline">Uncheck Visible</button>
+      <button id="export" class="btn outline export">Export</button>
+    </div>
+
+    <div id="grid" class="grid" role="list"></div>
+
+    <div class="footer">
+      <button id="reset" class="btn outline">Reset Progress</button>
+      <p style="margin-top:12px">P.S. Cookies expire in 365 days. Export lets you copy your progress for backup or sharing.</p>
+    </div>
+  </div>
+
+  <template id="cardTemplate">
+    <label class="card" role="listitem">
+      <input type="checkbox" />
+      <div>
+        <span class="item-label"></span>
+        <span class="item-note"></span>
+      </div>
+      <span class="pill"></span>
+    </label>
+  </template>
+
+  <script>
+    // ----- Data -----------------------------------------------------------
+    const DISHES = [
+      { name: 'Pad Thai', note: 'ผัดไทย – stir-fried rice noodles', tag: 'noodle' },
+      { name: 'Tom Yum Goong', note: 'ต้มยำกุ้ง – hot & sour prawn soup', tag: 'soup' },
+      { name: 'Som Tam', note: 'ส้มตำ – green papaya salad', tag: 'salad' },
+      { name: 'Pad Kra Pao (Basil Stir-fry)', note: 'ผัดกะเพรา – with fried egg?', tag: 'stir-fry' },
+      { name: 'Massaman Curry', note: 'แกงมัสมั่น – rich & mellow', tag: 'curry' },
+      { name: 'Green Curry (Gaeng Keow Wan)', note: 'แกงเขียวหวาน', tag: 'curry' },
+      { name: 'Panang Curry', note: 'พะแนง – thick peanuty curry', tag: 'curry' },
+      { name: 'Khao Soi', note: 'ข้าวซอย – northern curry noodles', tag: 'noodle' },
+      { name: 'Boat Noodles (Kuay Tiew Reua)', note: 'ก๋วยเตี๋ยวเรือ', tag: 'noodle' },
+      { name: 'Pad See Ew', note: 'ผัดซีอิ๊ว – soy-sauce noodles', tag: 'noodle' },
+      { name: 'Pad Kee Mao (Drunken Noodles)', note: 'ผัดขี้เมา – spicy!', tag: 'noodle' },
+      { name: 'Tom Kha Gai', note: 'ต้มข่าไก่ – coconut galangal soup', tag: 'soup' },
+      { name: 'Laab (Larb)', note: 'ลาบ – Isaan minced meat salad', tag: 'salad' },
+      { name: 'Nam Tok', note: 'น้ำตก – grilled meat salad', tag: 'salad' },
+      { name: 'Gai Yang (Grilled Chicken)', note: 'ไก่ย่าง – perfect with sticky rice', tag: 'grill' },
+      { name: 'Moo Ping (Grilled Pork Skewers)', note: 'หมูปิ้ง – street snack', tag: 'grill' },
+      { name: 'Sai Ua (Chiang Mai Sausage)', note: 'ไส้อั่ว – herb-packed', tag: 'sausage' },
+      { name: 'Khao Man Gai', note: 'ข้าวมันไก่ – Hainanese style', tag: 'rice' },
+      { name: 'Khao Kha Moo', note: 'ข้าวขาหมู – braised pork leg rice', tag: 'rice' },
+      { name: 'Khao Moo Tod (Crispy Pork Rice)', note: 'ข้าวหมูทอด', tag: 'rice' },
+      { name: 'Hor Mok (Thai Fish Custard)', note: 'ห่อหมก', tag: 'curry' },
+      { name: 'Yum Woon Sen', note: 'ยำวุ้นเส้น – glass noodle salad', tag: 'salad' },
+      { name: 'Pla Pao (Salt-Crusted Grilled Fish)', note: 'ปลาเผาเกลือ', tag: 'grill' },
+      { name: 'Miang Kham', note: 'เมี่ยงคำ – betel leaf bites', tag: 'snack' },
+      { name: 'Moo Satay', note: 'หมูสะเต๊ะ – with peanut sauce', tag: 'grill' },
+      { name: 'Kai Jeow (Thai Omelette)', note: 'ไข่เจียว – crispy edges!', tag: 'egg' },
+      { name: 'Khao Pad (Fried Rice)', note: 'ข้าวผัด – crab/shrimp/chicken', tag: 'rice' },
+      { name: 'Gaeng Som (Sour Curry)', note: 'แกงส้ม – tamarind & veg', tag: 'curry' },
+      { name: 'Pad Prik King', note: 'ผัดพริกขิง – dry curry stir-fry', tag: 'stir-fry' },
+      { name: 'Khao Niaow Mamuang (Mango Sticky Rice)', note: 'ข้าวเหนียวมะม่วง', tag: 'dessert' },
+      { name: 'Khanom Buang', note: 'ขนมเบื้อง – Thai crepes', tag: 'dessert' },
+      { name: 'Khanom Krok', note: 'ขนมครก – coconut pancakes', tag: 'dessert' },
+      { name: 'Tub Tim Krob (Red Ruby)', note: 'ทับทิมกรอบ – water chestnuts', tag: 'dessert' },
+      { name: 'Roti Sai Mai (Ayutthaya Candy Floss)', note: 'โรตีสายไหม', tag: 'dessert' },
+      { name: 'Pla Rad Prik', note: 'ปลาราดพริก – fried fish w/ chili', tag: 'seafood' },
+      { name: 'Goong Chae Nam Pla', note: 'กุ้งแช่น้ำปลา – raw shrimp', tag: 'seafood' },
+      { name: 'Kai Yang Som Tam Khao Niao Combo', note: 'ไก่ย่าง ส้มตำ ข้าวเหนียว', tag: 'set' },
+    ];
+
+    // ----- Cookie helpers -------------------------------------------------
+    const COOKIE_NAME = 'thaiFoodChecklist';
+    function setCookie(name, value, days = 365) {
+      const expires = new Date(Date.now() + days*24*60*60*1000).toUTCString();
+      document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; expires=${expires}; path=/; samesite=lax`;
+    }
+    function getCookie(name) {
+      const cookies = document.cookie ? document.cookie.split('; ') : [];
+      const target = encodeURIComponent(name) + '=';
+      for (const c of cookies) {
+        if (c.startsWith(target)) return decodeURIComponent(c.slice(target.length));
+      }
+      return null;
+    }
+    function saveState(state) {
+      try {
+        const json = JSON.stringify(state);
+        setCookie(COOKIE_NAME, json);
+      } catch (e) { console.error('Failed to save cookie', e); }
+    }
+    function loadState() {
+      try {
+        const raw = getCookie(COOKIE_NAME);
+        return raw ? JSON.parse(raw) : null;
+      } catch (e) { return null; }
+    }
+
+    // ----- App State ------------------------------------------------------
+    let state = loadState() || { checks: {}, lastUpdated: Date.now() };
+
+    // Build UI
+    const grid = document.getElementById('grid');
+    const tpl = document.getElementById('cardTemplate');
+
+    function renderList(filter = '') {
+      grid.innerHTML = '';
+      const q = filter.trim().toLowerCase();
+      const list = DISHES.filter(d => !q || d.name.toLowerCase().includes(q) || d.tag.toLowerCase().includes(q) || d.note.toLowerCase().includes(q));
+      for (const d of list) {
+        const node = tpl.content.firstElementChild.cloneNode(true);
+        const cb = node.querySelector('input[type="checkbox"]');
+        const nameEl = node.querySelector('.item-label');
+        const noteEl = node.querySelector('.item-note');
+        const pill = node.querySelector('.pill');
+        nameEl.textContent = d.name;
+        noteEl.textContent = d.note;
+        pill.textContent = d.tag;
+        cb.checked = !!state.checks[d.name];
+        cb.addEventListener('change', () => {
+          state.checks[d.name] = cb.checked;
+          state.lastUpdated = Date.now();
+          saveState(state);
+          updateProgress();
+        });
+        grid.appendChild(node);
+      }
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const total = DISHES.length;
+      const checked = Object.values(state.checks).filter(Boolean).length;
+      const pct = total ? Math.round((checked / total) * 100) : 0;
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressText').textContent = pct + '% complete';
+      document.getElementById('countText').textContent = `${checked} / ${total} tried`;
+    }
+
+    // Controls
+    const search = document.getElementById('search');
+    const checkAllBtn = document.getElementById('checkAll');
+    const uncheckAllBtn = document.getElementById('uncheckAll');
+    const exportBtn = document.getElementById('export');
+    const resetBtn = document.getElementById('reset');
+
+    // Debounce input
+    let t;
+    search.addEventListener('input', () => {
+      clearTimeout(t);
+      t = setTimeout(() => renderList(search.value), 120);
+    });
+
+    checkAllBtn.addEventListener('click', () => {
+      const q = search.value.trim().toLowerCase();
+      const visible = DISHES.filter(d => !q || d.name.toLowerCase().includes(q) || d.tag.toLowerCase().includes(q) || d.note.toLowerCase().includes(q));
+      for (const d of visible) state.checks[d.name] = true;
+      saveState(state);
+      renderList(search.value);
+    });
+
+    uncheckAllBtn.addEventListener('click', () => {
+      const q = search.value.trim().toLowerCase();
+      const visible = DISHES.filter(d => !q || d.name.toLowerCase().includes(q) || d.tag.toLowerCase().includes(q) || d.note.toLowerCase().includes(q));
+      for (const d of visible) state.checks[d.name] = false;
+      saveState(state);
+      renderList(search.value);
+    });
+
+    exportBtn.addEventListener('click', () => {
+      const tried = DISHES.filter(d => state.checks[d.name]).map(d => d.name);
+      const payload = {
+        type: 'thai-food-checklist-export',
+        date: new Date().toISOString(),
+        total: DISHES.length,
+        tried,
+        percent: Math.round((tried.length / DISHES.length) * 100)
+      };
+      const text = JSON.stringify(payload, null, 2);
+      navigator.clipboard.writeText(text).then(() => {
+        exportBtn.textContent = 'Copied!';
+        setTimeout(() => (exportBtn.textContent = 'Export'), 1200);
+      }).catch(() => {
+        prompt('Copy your progress JSON:', text);
+      });
+    });
+
+    resetBtn.addEventListener('click', () => {
+      if (!confirm('Reset all progress?')) return;
+      state = { checks: {}, lastUpdated: Date.now() };
+      saveState(state);
+      renderList(search.value);
+    });
+
+    // Initial render
+    renderList('');
+  </script>
+</body>
+</html>
